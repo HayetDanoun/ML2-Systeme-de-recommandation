@@ -1,0 +1,7 @@
+datetime,user_query,title,liked,comment,mode
+2023-10-01 12:00:00,"I love horror movies","Scary Movie","False","Not scary enough, bad acting","per_movie"
+2023-10-01 12:05:00,"I love horror movies","Paranormal Activity","True","","per_movie"
+2023-10-01 12:10:00,"I want a superhero comedy","Thor: Ragnarok","False","Too much fantasy, not enough comedy","per_movie"
+2025-02-01 12:00:00,I love sci-fi,Blade Runner,False,Too slow,per_movie
+2025-01-31 23:18:42.183697,aa,A Is for Autism,True,,per_movie
+
