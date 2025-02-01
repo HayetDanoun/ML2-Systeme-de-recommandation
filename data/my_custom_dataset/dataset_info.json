@@ -1,0 +1,62 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "title": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "overview": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "genres": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "original_language": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "release_date": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "vote_average": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "popularity": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "poster_path": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "processed_overview": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "embeddings": {
+      "feature": {
+        "dtype": "float32",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    },
+    "embeddings_sbert": {
+      "feature": {
+        "dtype": "float32",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
