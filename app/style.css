@@ -1,0 +1,59 @@
+/* style.css */
+
+
+
+/* En-tête */
+.big-title {
+    color: #ffffff;
+    text-align: center;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.subtitle {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.header-container {
+    background-color: #4C6EF5;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Titres des recommandations */
+.reco-title {
+    font-weight: bold;
+    color: #4C6EF5;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Description des films */
+.movie-overview {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+
+/* Footer fixé en bas */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #4C6EF5;
+    color: white;
+    text-align: center;
+    padding: 0.8rem;
+    font-size: 0.9rem;
+}
+
+/* Centre le bouton obtenir des recompenses */
+.center-button {
+    display: flex;
+    justify-content: center;
+}

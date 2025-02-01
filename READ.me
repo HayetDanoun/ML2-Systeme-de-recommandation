@@ -1,1 +1,211 @@
-zz
+# README — Système de Recommandation de Films (avec Docker & Streamlit)
+
+Ce projet est un **système de recommandation de films** utilisant un pipeline de type RAG (Retrieval-Augmented Generation), s’appuyant à la fois sur FAISS et sur des modèles Transformers tels que DPR et SBERT (Sentence-Transformers). L’objectif est de proposer des suggestions de films sur la base d’une description textuelle fournie par l’utilisateur, avec la possibilité de collecter du feedback (like/dislike) et de réindexer dynamiquement l’index vectoriel pour améliorer la pertinence des recommandations.
+
+
+---
+
+## 🎯 1. Objectifs du Projet
+
+- **Recommandation de films** basée sur une **description textuelle** donnée par l'utilisateur.
+- **Utilisation d'embeddings vectoriels** pour comparer la similarité des films.
+- **Moteur de recherche FAISS** pour une récupération rapide des films similaires.
+- **Apprentissage dynamique** à partir des feedbacks utilisateur (ajustement des recommandations).
+- **Déploiement simple avec Docker** et **Docker Compose**.
+
+---
+
+## 📂 2. Architecture des Fichiers
+
+```
+ML2/
+├── app/
+│   ├── app.py                    # Interface utilisateur (Streamlit)
+│   ├── feedback_analysis.py       # Gestion et analyse des feedbacks
+│   ├── feedback_handler.py        # Stockage des feedbacks utilisateur
+│   ├── recommendation.py          # Moteur de recommandation (DPR, SBERT, FAISS)
+│   └── style.css                  # Fichier CSS pour personnaliser Streamlit
+├── data/
+│   ├── feedback.csv               # Fichier CSV stockant les feedbacks (likes/dislikes)
+│   ├── movies_metadata_clean.csv  # Dataset de films nettoyé
+│   └── my_custom_dataset/         # Dataset HuggingFace + index FAISS
+│       ├── data-00000-of-00001.arrow
+│       ├── dataset_info.json
+│       ├── embeddings
+│       └── state.json
+├── docker/
+│   ├── docker-compose.yml         # Configuration Docker Compose
+│   ├── Dockerfile                 # Image Docker pour l'application
+│   └── entrypoint.sh              # Script d'initialisation Docker
+├── images/
+│   └── 22059000-non-image-disponible-icone-vectoriel.jpg  # Image par défaut pour les films sans poster
+├── recommendation.ipynb            # Notebook Jupyter pour tests et analyses
+├── requirements.txt                # Liste des dépendances Python
+```
+
+---
+
+## 🏗️ 3. Technologies Utilisées
+
+### 🔍 **Moteur de Recommandation**
+- **DPR (Dense Passage Retrieval)** : Transforme un texte en un vecteur dense (~768 dimensions).
+- **SBERT (Sentence-Transformers)** : Spécialisé dans la similarité de phrases, utile pour capturer le sens d’une requête utilisateur.
+- **FAISS (Facebook AI Similarity Search)** : Permet une recherche ultra-rapide sur des milliers de films.
+
+### 📊 **Gestion des Feedbacks**
+- **KeyBERT** : Extraction automatique de mots-clés à partir des commentaires utilisateurs.
+- **Ajustement des Embeddings** : Boost ou pénalisation des films selon les feedbacks (likes/dislikes).
+- **Ré-indexation dynamique** : Reconstruction de l’index FAISS après prise en compte des feedbacks.
+
+### 🌐 **Interface Utilisateur**
+- **Streamlit** : Interface web simple et interactive pour saisir des descriptions et obtenir des recommandations.
+
+### 🐳 **Conteneurisation**
+- **Docker & Docker Compose** : Facilite le déploiement sur n'importe quelle machine.
+
+---
+
+## 🚀 4. Installation et Déploiement
+
+### 4.1 Prérequis
+
+- **Python 3.9+**
+- **Docker**
+- **Docker Compose**
+
+### 4.2 Installation Locale (Sans Docker)
+
+1️⃣ **Cloner le projet** :
+```bash
+git clone https://github.com/HayetDanoun/ML2-Systeme-de-recommandation.git
+cd ML2-Systeme-de-recommandation
+```
+ou
+
+```bash
+git clone git@github.com:HayetDanoun/ML2-Systeme-de-recommandation.git
+cd ML2-Systeme-de-recommandation
+```
+
+
+
+2️⃣ **Installer les dépendances** :
+```bash
+pip install -r requirements.txt
+```
+
+3️⃣ **Lancer l’application Streamlit** :
+```bash
+streamlit run app/app.py
+```
+
+L’interface sera disponible sur **http://localhost:8501**.
+
+---
+
+### 4.3 Utilisation avec Docker
+
+1️⃣ **Construire l’image Docker** :
+```bash
+docker build -t film-recommender -f docker/Dockerfile .
+```
+
+2️⃣ **Lancer le container** :
+```bash
+docker run -p 8501:8501 film-recommender
+```
+
+L’interface sera disponible sur **http://localhost:8501**.
+
+---
+
+### 4.4 Déploiement avec Docker Compose
+
+Docker Compose permet de **gérer plusieurs containers** si nécessaire (exemple : ajouter une base de données).  
+Pour démarrer l’application :
+
+```bash
+docker-compose -f docker/docker-compose.yml up --build
+```
+
+Puis accédez à **http://localhost:8501**.
+
+Pour arrêter l’application :
+```bash
+docker-compose -f docker/docker-compose.yml down
+```
+
+---
+
+## 🛠️ 5. Fonctionnalités
+
+- Saisir une **description** d’un film souhaité.
+- Recevoir une **liste de recommandations** de films correspondants.
+- Liker / Disliker les recommandations et laisser un **commentaire**.
+- **Ré-indexer** les données après retour utilisateur pour améliorer les futures suggestions.
+
+---
+
+## 🔍 6. Détails Techniques
+
+### 6.1 **Création des Embeddings**
+
+1️⃣ **Prétraitement du dataset (`movies_metadata_clean.csv`)** :
+   - Suppression des films sans description ou trop court.
+   - Retrait des doublons.
+   - Filtrage sur la langue (ex. original_language == "en").
+   - Nettoyage (stopwords anglais, lemmatisation, mise en minuscules...).
+   - Création d’un champ `text` = `title + overview`.
+
+2️⃣ **Calcul des embeddings** avec **DPR** et **SBERT**.
+   - DRP :  facebook/dpr-ctx_encoder-single-nq-base pour encoder la colonne text. On récupère pooler_output (taille ~768).
+   - SBERT : sentence-transformers/all-mpnet-base-v2 pour produire un embedding ~768D.
+
+3️⃣ **Indexation avec FAISS** pour rechercher les films similaires.
+   - Ajout d’un index FAISS pour les colonnes embeddings (DPR) et embeddings_sbert (SBERT).
+   - Sauvegarde du dataset HuggingFace et de l’index dans my_custom_dataset.
+
+---
+
+## 🔧 7. Système de Recommandation (Streamlit + RAG)
+
+### 7.1 Fonctionnement
+
+1️⃣ **Chargement dans recommendation.py** :
+- `recommendation.py` charge le modèle **RagTokenForGeneration** et **RagRetriever** avec l’index FAISS local.
+- L’utilisateur saisit une description (ex. *"An action movie with superheroes and humor"*).
+- La requête est encodée, puis FAISS retrouve les vecteurs de films les plus proches.
+- Les titres, overviews et chemins de poster des films les plus pertinents sont renvoyés.
+
+2️⃣ **Interface (app.py)** :
+- L'utilisateur saisit une description de film et choisit le nombre de recommandations souhaité.
+- En appuyant sur **"Obtenir des recommandations"**, FAISS recherche les films ayant les vecteurs les plus proches.
+- Les films correspondants sont affichés avec leurs titres, overviews et affiches.
+- **Système de feedback** :
+  - L'utilisateur peut **liker** ou **disliker** chaque recommandation.
+  - En cas de dislike, il peut entrer un commentaire expliquant son choix.
+  - Les avis des utilisateurs (likes/dislikes + commentaires) sont enregistrés dans `data/feedback.csv`.
+
+### 7.2 Ré-indexation dynamique
+- **Extraction des mots-clés** des commentaires via **KeyBERT**.
+- Un bouton **"Appliquer la ré-indexation maintenant"** déclenche `adjust_embeddings_based_on_feedback()` :
+  - Une ré-indexation automatique est donc faites 
+  - Les mots-clés des commentaires **négatifs** pénalisent les embeddings des films correspondants (*multiplicateur < 1*).
+  - Les mots-clés des commentaires **positifs** boostent les embeddings (*multiplicateur > 1*).
+- Un nouvel index FAISS est alors reconstruit avec les embeddings ajustés.
+- **Les recommandations s’améliorent donc au fil du temps en tenant compte des préférences réelles des utilisateurs.**
+
+
+---
+
+## 🏆 8. Résumé
+
+✔ **Moteur de recommandation avancé** basé sur **DPR, SBERT et FAISS**.  
+✔ **Interface utilisateur Streamlit** simple et efficace.  
+✔ **Gestion dynamique des feedbacks**  pour améliorer les suggestions grâce à KeyBERT et l'ajustement des embeddings FAISS.
+✔ **Déploiement facilité avec Docker & Docker Compose**.  
+
+---
+
+🚀 **Testez-le dès maintenant et améliorez vos recommandations de films !**
+
