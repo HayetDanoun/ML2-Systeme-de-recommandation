@@ -1,0 +1,2 @@
+*.arrow filter=lfs diff=lfs merge=lfs -text
+data/*/*.arrow filter=lfs diff=lfs merge=lfs -text
